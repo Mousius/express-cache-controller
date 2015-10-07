@@ -392,4 +392,23 @@ describe('cacheControl()', function () {
         .end(done);
     });
   });
+
+  describe('when no cache properties set', function () {
+    it('does not set a cache-control header', function (done) {
+      var app = koa();
+
+      app.use(cacheControl());
+
+      app.use(function*(next) {
+        yield next;
+      });
+
+      request(app.listen())
+        .get('/')
+        .expect(function (res) {
+          return res.headers['Cache-Control'] === undefined;
+        })
+        .end(done);
+    });
+  });
 });
