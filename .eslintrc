@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "indent": [2, 2],
+    "generator-star-spacing": [2, "after"]
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  }
+}
