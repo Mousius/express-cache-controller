@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "coverage": "istanbul cover _mocha -- -R dot"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "eslint": "^1.6.0",
+    "istanbul": "^0.3.22",
     "koa": "^1.0.0",
     "mocha": "^2.3.2",
     "supertest": "^1.1.0"
