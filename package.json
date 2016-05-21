@@ -26,9 +26,9 @@
     "url": "https://github.com/DaMouse404/express-cache-headers/issues"
   },
   "devDependencies": {
-    "eslint": "^1.6.0",
+    "eslint": "^2.10.2",
     "express": "^4.13.4",
-    "istanbul": "^0.3.22",
+    "istanbul": "^0.4.3",
     "mocha": "^2.3.2",
     "supertest": "^1.1.0"
   },
