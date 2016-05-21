@@ -1,4 +1,4 @@
-# express-cache-control
+# express-cache-controller
 
 A simple and lightweight module for managing cache control headers from within your application. It also tries to provide a simple set of rules for common use cases such as setting 'max-age=0' when 'no-cache' is present by default.
 

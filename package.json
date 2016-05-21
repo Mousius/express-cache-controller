@@ -1,5 +1,5 @@
 {
-  "name": "express-cache-control",
+  "name": "express-cache-controller",
   "version": "1.0.0",
   "description": "Middleware for meddling with Cache-Control headers",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DaMouse404/express-cache-control"
+    "url": "https://github.com/DaMouse404/express-cache-controller"
   },
   "keywords": [
     "express",
@@ -23,7 +23,7 @@
   "author": "Christopher Sidebottom",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DaMouse404/express-cache-headers/issues"
+    "url": "https://github.com/DaMouse404/express-cache-controller/issues"
   },
   "devDependencies": {
     "eslint": "^2.10.2",
