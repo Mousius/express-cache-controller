@@ -1,5 +1,5 @@
 {
-  "name": "koa-cache-control",
+  "name": "express-cache-control",
   "version": "1.0.0",
   "description": "Middleware for meddling with Cache-Control headers",
   "main": "index.js",
@@ -10,10 +10,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DaMouse404/koa-cache-control"
+    "url": "https://github.com/DaMouse404/express-cache-control"
   },
   "keywords": [
-    "Koa",
+    "express",
+    "max-age",
+    "maxage",
     "cache",
     "cache-control",
     "no-cache"
@@ -21,16 +23,17 @@
   "author": "Christopher Sidebottom",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DaMouse404/koa-cache-headers/issues"
+    "url": "https://github.com/DaMouse404/express-cache-headers/issues"
   },
   "devDependencies": {
     "eslint": "^1.6.0",
+    "express": "^4.13.4",
     "istanbul": "^0.3.22",
-    "koa": "^1.0.0",
     "mocha": "^2.3.2",
     "supertest": "^1.1.0"
   },
   "dependencies": {
-    "lodash": "^3.10.1"
+    "lodash": "^4.12.0",
+    "on-headers": "^1.0.1"
   }
 }

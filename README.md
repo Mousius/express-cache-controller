@@ -1,12 +1,12 @@
-# koa-cache-control
+# express-cache-control
 
-A simple method for managing cache control headers from your application. It also tries to provide a simple set of rules for common use cases such as setting 'max-age=0' when 'no-cache' is present by default.
+A simple and lightweight module for managing cache control headers from within your application. It also tries to provide a simple set of rules for common use cases such as setting 'max-age=0' when 'no-cache' is present by default.
 
 ## Example
 Configuring noCache easily:
 ```js
 app.use(cacheControl({
-    noCache: true
+  noCache: true
 }));
 ```
 Creates a cache-control header of `no-cache, max-age=0`
@@ -26,31 +26,30 @@ app.use(cacheControl({
 ```
 
 ### Overriding Defaults
-Just set the cacheControl object after the cacheControl() middleware is loaded on the request context:
+Just set the cacheControl property of the response object after the cacheControl() middleware is loaded:
 ```js
-app.use(function *(next){
-    this.cacheControl = {
-        maxAge: 60
-    };
+app.use(cacheControl({ maxAge: 60 }));
+app.get('/', function (req, res, next){
+  res.cacheControl = {
+      maxAge: 30
+  };
 
-    yield next;
+  res.send('hai');
 });
 ```
 
 This is useful in error conditions where you can setup cache headers before and after a request is processed:
 ```js
-app.use(function *(next){
-    this.cacheControl = {
-        maxAge: 60
-    };
+app.use(cacheControl({ maxAge: 60} ));
+app.get('/', function (req, res, next) {
+  next(Error('BOOM!'));
+});
+app.use(function (err, req, res, next) {
+  res.cacheControl = {
+      maxAge: 5
+  };
 
-    try {
-        yield next;
-    } catch (err) {
-        this.cacheControl = {
-            maxAge: 5
-        };
-    }
+  res.status(500).send('oh no!');
 });
 ```
 

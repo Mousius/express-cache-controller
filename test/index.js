@@ -1,22 +1,22 @@
 var request = require('supertest');
-var koa = require('koa');
+var express = require('express');
 var cacheControl = require('..');
 var fs = require('fs');
 
 describe('cacheControl()', function () {
   describe('default configuration', function () {
     it('uses defaults if nothing defined on request', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         maxAge: 4
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'max-age=4')
         .end(done);
@@ -24,49 +24,47 @@ describe('cacheControl()', function () {
   });
 
   describe('override default configuration', function () {
-    it('allows middleware to override options in incoming requests', function (done) {
-      var app = koa();
+    it('allows middleware to override options in routes', function (done) {
+      var app = express();
 
       app.use(cacheControl({
         maxAge: 4
       }));
 
-      app.use(function*(next) {
-        this.cacheControl = {
+      app.get('/', function (req, res, next) {
+        res.cacheControl = {
           maxAge: 60
         };
 
-        yield next;
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'max-age=60')
         .end(done);
     })
 
-    it('allows middleware to override options on outgoing requests', function (done) {
-      var app = koa();
+    it('allows middleware to override options on error responses', function (done) {
+      var app = express();
 
       app.use(cacheControl({
         maxAge: 300
       }));
 
-      app.use(function*(next) {
-        try {
-          yield next;
-        } catch (err) {
-          this.cacheControl = {
-            noCache: true
-          };
-        }
+      app.get('/', function (req, res, next) {
+        next(Error('bad juju'))
       });
 
-      app.use(function*(next) {
-        this.throw(500);
+      app.use(function (err, req, res, next) {
+        res.cacheControl = {
+          noCache: true
+        };
+
+        res.status(500).send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-cache,max-age=0')
         .end(done);
@@ -75,17 +73,17 @@ describe('cacheControl()', function () {
 
   describe('public is set', function () {
     it('adds public flag to cache-control header', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         public: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'public')
         .end(done);
@@ -94,35 +92,35 @@ describe('cacheControl()', function () {
 
   describe('private is set', function () {
     it('adds private flag to cache-control header', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         private: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'private')
         .end(done);
     });
 
     it('discards public flag in cache-control header', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         private: true,
         public: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'private')
         .end(done);
@@ -131,17 +129,17 @@ describe('cacheControl()', function () {
 
   describe('maxAge is set', function () {
     it('sets cache-control max-age section', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         maxAge: 4
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'max-age=4')
         .end(done);
@@ -150,17 +148,17 @@ describe('cacheControl()', function () {
 
   describe('staleIfError is set', function () {
     it('sets cache-control header with stale-if-error', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         staleIfError: 320
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'stale-if-error=320')
         .end(done);
@@ -169,17 +167,17 @@ describe('cacheControl()', function () {
 
   describe('staleWhileRevalidate is set', function () {
     it('sets cache-control header with stale-while-revalidate', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         staleWhileRevalidate: 320
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'stale-while-revalidate=320')
         .end(done);
@@ -188,24 +186,24 @@ describe('cacheControl()', function () {
 
   describe('mustRevalidate is set', function () {
     it('sets cache-control header with must-revalidate', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         mustRevalidate: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'must-revalidate')
         .end(done);
     });
 
     it('overthrows stale-while-revalidate and stale-if-error', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         mustRevalidate: true,
@@ -213,11 +211,11 @@ describe('cacheControl()', function () {
         staleIfError: 404
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'must-revalidate')
         .end(done);
@@ -226,60 +224,60 @@ describe('cacheControl()', function () {
 
   describe('when noCache is true', function () {
     it('adds no-cache to Cache-Control header', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         noCache: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-cache,max-age=0')
         .end(done);
     });
 
     it('sets maxAge to 0', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         noCache: true,
         maxAge: 60
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-cache,max-age=0')
         .end(done);
     });
 
     it('removes sMaxAge', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         noCache: true,
         sMaxAge: 60
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-cache,max-age=0')
         .end(done);
     });
 
     it('ignores stale settings', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         noCache: true,
@@ -287,11 +285,11 @@ describe('cacheControl()', function () {
         staleWhileRevalidate: 10
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-cache,max-age=0')
         .end(done);
@@ -300,35 +298,35 @@ describe('cacheControl()', function () {
 
   describe('when noStore is true', function () {
     it('sets Cache-Control no-store and no-cache', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         noStore: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-store,no-cache,max-age=0')
         .end(done);
     });
 
     it('sets maxAge to 0', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         noStore: true,
         maxAge: 50
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-store,no-cache,max-age=0')
         .end(done);
@@ -337,17 +335,17 @@ describe('cacheControl()', function () {
 
   describe('when noTransform is set', function () {
     it('sets Cache-Control no-transform', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         noTransform: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'no-transform')
         .end(done);
@@ -356,17 +354,17 @@ describe('cacheControl()', function () {
 
   describe('when proxyRevalidate', function () {
     it('sets Cache-Control proxy-revalidate', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         proxyRevalidate: true
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 'proxy-revalidate')
         .end(done);
@@ -376,17 +374,17 @@ describe('cacheControl()', function () {
 
   describe('when sMaxAge', function () {
     it('sets Cache-Control s-maxage property', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl({
         sMaxAge: 10
       }));
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect('Cache-Control', 's-maxage=10')
         .end(done);
@@ -395,15 +393,15 @@ describe('cacheControl()', function () {
 
   describe('when no cache properties set', function () {
     it('does not set a cache-control header', function (done) {
-      var app = koa();
+      var app = express();
 
       app.use(cacheControl());
 
-      app.use(function*(next) {
-        yield next;
+      app.get('/', function (req, res, next) {
+        res.send('');
       });
 
-      request(app.listen())
+      request(app)
         .get('/')
         .expect(function (res) {
           return res.headers['Cache-Control'] === undefined;

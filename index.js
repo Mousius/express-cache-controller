@@ -1,60 +1,65 @@
 var _ = require('lodash');
 var util = require('util');
+var onHeaders = require('on-headers');
 
 module.exports = function (defaults) {
-  return function* cacheControl(next) {
-    yield* next;
+  return function cacheControl(req, res, next) {
+    res.cacheControl = defaults;
 
-    var options = _.defaults(this.cacheControl || {}, defaults),
-      cacheControl = [];
+    onHeaders(res, function () {
+      var options = _.defaults(this.cacheControl || {}, defaults);
+      var cacheControl = [];
 
-    if (options.private) {
-      cacheControl.push('private');
-    } else if (options.public) {
-      cacheControl.push('public');
-    }
-
-    if (options.noStore) {
-      options.noCache = true;
-      cacheControl.push('no-store');
-    }
-
-    if (options.noCache) {
-      options.maxAge = 0;
-      delete options.sMaxAge;
-      cacheControl.push('no-cache');
-    }
-
-    if (options.noTransform) {
-      cacheControl.push('no-transform');
-    }
-
-    if (options.proxyRevalidate) {
-      cacheControl.push('proxy-revalidate');
-    }
-
-    if (options.mustRevalidate) {
-      cacheControl.push('must-revalidate');
-    } else if (!options.noCache) {
-      if (options.staleIfError) {
-        cacheControl.push(util.format('stale-if-error=%d', options.staleIfError));
+      if (options.private) {
+        cacheControl.push('private');
+      } else if (options.public) {
+        cacheControl.push('public');
       }
 
-      if (options.staleWhileRevalidate) {
-        cacheControl.push(util.format('stale-while-revalidate=%d', options.staleWhileRevalidate));
+      if (options.noStore) {
+        options.noCache = true;
+        cacheControl.push('no-store');
       }
-    }
 
-    if (_.isNumber(options.maxAge)) {
-      cacheControl.push(util.format('max-age=%d', options.maxAge));
-    }
+      if (options.noCache) {
+        options.maxAge = 0;
+        delete options.sMaxAge;
+        cacheControl.push('no-cache');
+      }
 
-    if (_.isNumber(options.sMaxAge)) {
-      cacheControl.push(util.format('s-maxage=%d', options.sMaxAge));
-    }
+      if (options.noTransform) {
+        cacheControl.push('no-transform');
+      }
 
-    if (cacheControl.length) {
-      this.set('Cache-Control', cacheControl.join(','));
-    }
+      if (options.proxyRevalidate) {
+        cacheControl.push('proxy-revalidate');
+      }
+
+      if (options.mustRevalidate) {
+        cacheControl.push('must-revalidate');
+      } else if (!options.noCache) {
+        if (options.staleIfError) {
+          cacheControl.push(util.format('stale-if-error=%d', options.staleIfError));
+        }
+
+        if (options.staleWhileRevalidate) {
+          cacheControl.push(util.format('stale-while-revalidate=%d', options.staleWhileRevalidate));
+        }
+      }
+
+      if (_.isNumber(options.maxAge)) {
+        cacheControl.push(util.format('max-age=%d', options.maxAge));
+      }
+
+      if (_.isNumber(options.sMaxAge)) {
+        cacheControl.push(util.format('s-maxage=%d', options.sMaxAge));
+      }
+
+      if (cacheControl.length) {
+        this.setHeader('Cache-Control', cacheControl.join(','));
+      }
+    });
+
+    next();
   }
 }
