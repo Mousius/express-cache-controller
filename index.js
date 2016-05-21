@@ -7,7 +7,7 @@ module.exports = function (defaults) {
     res.cacheControl = defaults;
 
     onHeaders(res, function () {
-      var options = _.defaults(this.cacheControl || {}, defaults);
+      var options = this.cacheControl || {};
       var cacheControl = [];
 
       if (options.private) {

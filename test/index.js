@@ -28,7 +28,8 @@ describe('cacheControl()', function () {
       var app = express();
 
       app.use(cacheControl({
-        maxAge: 4
+        maxAge: 4,
+        staleWhileRevalidate: 10
       }));
 
       app.get('/', function (req, res, next) {
