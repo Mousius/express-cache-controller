@@ -1,4 +1,4 @@
-var _ = require('lodash');
+var isNumber = require('lodash.isnumber');
 var util = require('util');
 var onHeaders = require('on-headers');
 
@@ -47,11 +47,11 @@ module.exports = function (defaults) {
         }
       }
 
-      if (_.isNumber(options.maxAge)) {
+      if (isNumber(options.maxAge)) {
         cacheControl.push(util.format('max-age=%d', options.maxAge));
       }
 
-      if (_.isNumber(options.sMaxAge)) {
+      if (isNumber(options.sMaxAge)) {
         cacheControl.push(util.format('s-maxage=%d', options.sMaxAge));
       }
 

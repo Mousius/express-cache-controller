@@ -33,7 +33,7 @@
     "supertest": "^1.1.0"
   },
   "dependencies": {
-    "lodash": "^4.12.0",
+    "lodash.isnumber": "^3.0.3",
     "on-headers": "^1.0.1"
   }
 }
