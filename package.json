@@ -29,7 +29,7 @@
     "eslint": "^2.10.2",
     "express": "^4.13.4",
     "istanbul": "^0.4.3",
-    "mocha": "^2.3.2",
+    "mocha": "^2.5.0",
     "supertest": "^1.1.0"
   },
   "dependencies": {
