@@ -26,7 +26,7 @@
     "url": "https://github.com/DaMouse404/express-cache-controller/issues"
   },
   "devDependencies": {
-    "eslint": "^3.1.1",
+    "eslint": "^3.9.1",
     "express": "^4.13.4",
     "istanbul": "^0.4.3",
     "mocha": "^3.0.2",
