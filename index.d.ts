@@ -7,6 +7,16 @@ declare namespace Express {
 declare namespace ExpressCacheController {
     interface CacheControlOptions {
         maxAge?: number;
+        sMaxAge?: number;
+        private?: boolean;
+        public?: boolean;
+        noStore?: boolean;
+        noCache?: boolean;
+        noTransform?: boolean;
+        proxyRevalidate?: boolean;
+        mustRevalidate?: boolean;
+        staleIfError?: number;
+        staleWhileRevalidate?: number;
     }
 }
 
