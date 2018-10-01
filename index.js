@@ -55,7 +55,7 @@ module.exports = function (defaults) {
         cacheControl.push(util.format('s-maxage=%d', options.sMaxAge));
       }
 
-      if (cacheControl.length) {
+      if (cacheControl.length && !res.getHeader('Cache-Control')) {
         this.setHeader('Cache-Control', cacheControl.join(','));
       }
     });
